@@ -1,14 +1,14 @@
 const path = require('path');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const publicPath = path.join(__dirname, 'public');
 
 module.exports = (env, argv) => {
     const isProduction = env === 'production';
-    const CSSExtract = new ExtractTextPlugin('styles.css');
 
     return {
-        entry: ['babel-polyfill', './src/app.js'],
+        mode: isProduction ? 'production' : 'development',
+        entry: ['./src/app.js'],
         output: {
             path: publicPath,
             filename: 'bundle.js'
@@ -19,8 +19,9 @@ module.exports = (env, argv) => {
                 test: /\.js$/,
                 exclude: /node_modules/
             }, {
-                use: CSSExtract.extract({
-                    use: [{
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    {
                         loader: 'css-loader',
                         options: {
                             sourceMap: true
@@ -30,19 +31,21 @@ module.exports = (env, argv) => {
                         options: {
                             sourceMap: true
                         }
-                    }]
-                }),
+                    }],
                 test: /\.s?css$/
             }]
         },
         plugins: [
-            CSSExtract
+            new MiniCssExtractPlugin()
         ],
         devtool: isProduction ? 'source-map' : 'inline-source-map',
         devServer: {
-            contentBase: publicPath,
+            static: {
+                directory: publicPath,
+                publicPath: '/',
+            },
             historyApiFallback: true,
-            publicPath: '/'
+            hot: true,
         }
     };
 };
