@@ -9,7 +9,7 @@
   "author": "Cody Wanless",
   "scripts": {
     "build:dev": "webpack",
-    "build:prod": "webpack --env production",
+    "build:prod": "npm install && webpack --env production",
     "dev-server": "webpack-dev-server",
     "start": "node server/server.js"
   },
